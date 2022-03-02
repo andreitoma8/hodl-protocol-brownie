@@ -2,8 +2,11 @@
 pragma solidity ^0.8.0;
 
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 
 contract HodlBankTokens {
+    using SafeERC20 for IERC20;
+
     struct User {
         uint256 tokenOwned;
         uint256 timeLocked; //in seconds
@@ -26,8 +29,8 @@ contract HodlBankTokens {
         require(_amount > 0, "Amount staked must be more than 0");
         uint256 _tokenOwned = (_amount * (1000 - fee)) / 1000;
         uint256 _bankFee = (_amount * fee) / 1000;
-        IERC20(_token).transferFrom(msg.sender, address(this), _amount);
-        IERC20(_token).transfer(owner, _bankFee);
+        IERC20(_token).safeTransferFrom(msg.sender, address(this), _amount);
+        IERC20(_token).safeTransfer(owner, _bankFee);
         if (tokenUserInfo[_token][msg.sender].tokenOwned > 0) {
             tokenUserInfo[_token][msg.sender].tokenOwned =
                 tokenUserInfo[_token][msg.sender].tokenOwned +
@@ -52,7 +55,7 @@ contract HodlBankTokens {
         user.tokenOwned = 0;
         user.timeLocked = 0;
         user.timeOfDeposit = 0;
-        IERC20(_token).transfer(msg.sender, withdrawBalance);
+        IERC20(_token).safeTransfer(msg.sender, withdrawBalance);
     }
 
     function getUserInfo(address _userAddress, address _token)
