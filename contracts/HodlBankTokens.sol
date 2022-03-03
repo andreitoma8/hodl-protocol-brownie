@@ -63,7 +63,7 @@ contract HodlBankTokens {
         view
         returns (uint256, bool)
     {
-        User memory user = tokenUserInfo[_userAddress][_token];
+        User storage user = tokenUserInfo[_userAddress][_token];
         require(user.tokenOwned > 0, "This user has no deposit of this token.");
         bool canWithdraw = block.timestamp >=
             (user.timeOfDeposit + user.timeLocked);
